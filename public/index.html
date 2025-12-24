@@ -3,62 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live View</title>
+  <title>Camera Access</title>
 </head>
 <body>
-  <h1>Live Camera View</h1>
-  <p>Enter the Peer ID from the user's link:</p>
-  <input type="text" id="peerIdInput" placeholder="e.g., user-abc123">
-  <button id="connectButton">Connect and View</button>
-  <video id="remoteVideo" autoplay></video>
+  <h1>Click to Start Camera</h1>
+  <button id="startCamera">Start Camera</button>
+  <video id="localVideo" autoplay muted style="display:none;"></video>
+  <p id="linkDisplay" style="display:none;">View Link: <a id="viewLink" href="#" target="_blank">Open Viewer</a></p>
   <script src="https://unpkg.com/peerjs@1.4.7/lib/peerjs.min.js"></script>
-  <script>
-    const connectButton = document.getElementById('connectButton');
-    const peerIdInput = document.getElementById('peerIdInput');
-    const remoteVideo = document.getElementById('remoteVideo');
-
-    let peer;
-
-    // Auto-fill peer ID from URL if present
-    const urlParams = new URLSearchParams(window.location.search);
-    const idFromUrl = urlParams.get('id');
-    if (idFromUrl) {
-      peerIdInput.value = idFromUrl;
-    }
-
-    connectButton.addEventListener('click', () => {
-      const remotePeerId = peerIdInput.value;
-      if (!remotePeerId) {
-        alert('Enter a Peer ID');
-        return;
-      }
-
-      // Initialize PeerJS as receiver
-      peer = new Peer({
-        host: window.location.hostname,
-        port: window.location.port || 443,
-        path: '/peerjs',
-        secure: window.location.protocol === 'https:'
-      });
-
-      peer.on('open', () => {
-        console.log('Connected as viewer');
-        // Call the remote peer
-        const call = peer.call(remotePeerId, null); // No local stream needed for viewing
-        call.on('stream', (remoteStream) => {
-          remoteVideo.srcObject = remoteStream;
-        });
-        call.on('error', (err) => {
-          console.error('Call error:', err);
-          alert('Failed to connect. Check Peer ID.');
-        });
-      });
-
-      peer.on('error', (err) => {
-        console.error('Peer error:', err);
-        alert('Connection error.');
-      });
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
